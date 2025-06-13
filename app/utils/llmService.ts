@@ -17,9 +17,14 @@ export async function extractSkillsFromDescription(jobDescription: string): Prom
   try {
     // You'll need to replace this with your actual instance IP
     const instanceIp = process.env.NEXT_PUBLIC_LLAMA_INSTANCE_IP || "localhost";
-    const prompt = `Extract and list all technical skills, technologies, and qualifications required from this job description. Format as comma-separated values: 
-    
-    ${jobDescription}`;
+    const prompt = `Analyze the following job description and extract only the technical skills, technologies, frameworks, programming languages, and tools mentioned or required.
+
+Your response should ONLY contain the extracted skills as a comma-separated list with no additional text, explanations, or formatting.
+
+For example, a good response would be: "JavaScript, React, Node.js, TypeScript, Git, AWS"
+
+Job Description:
+${jobDescription}`;
     
     const response = await fetch(`http://${instanceIp}:5000/api/generate`, {
       method: 'POST',
@@ -37,8 +42,14 @@ export async function extractSkillsFromDescription(jobDescription: string): Prom
     }
 
     const data = await response.json();
+    let skillsText = data.response || data.generated_text || "";
+      // Clean up the response to ensure it's just a comma-separated list
+    // Remove any leading/trailing text that's not part of the skills list
+    skillsText = skillsText.replace(/^.*?(?=[\w])/, ''); // Remove text before first word
+    skillsText = skillsText.replace(/[.:](?:\s*$|\s*\n.*$)/, ''); // Remove trailing periods or any text after
+    
     return {
-      response: data.response || data.generated_text || "",
+      response: skillsText.trim(),
       success: true
     };
   } catch (error: any) {
@@ -49,4 +60,4 @@ export async function extractSkillsFromDescription(jobDescription: string): Prom
       error: error.message
     };
   }
-} 
+}

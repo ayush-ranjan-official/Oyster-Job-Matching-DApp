@@ -475,7 +475,7 @@ const JobMarketplaceABI = {"abi":[
 ]};
 
 // The contract address will be set after deployment
-let contractAddress = '';
+let contractAddress = '0xd9145CCE52D386f254917e481eB44e9943F39138';
 
 // Function to set contract address after deployment
 export const setContractAddress = (address: string) => {

@@ -37,7 +37,16 @@ export default function PostJob() {
       const result = await extractSkillsFromDescription(formData.description);
       
       if (result.success) {
-        setFormData(prev => ({ ...prev, skills: result.response }));
+        // Clean up the response and convert to a properly formatted comma-separated list
+        const skillsArray = result.response
+          .split(',')
+          .map(skill => skill.trim())
+          .filter(skill => skill.length > 0);
+        
+        // Join the array back into a comma-separated string
+        const formattedSkills = skillsArray.join(', ');
+        
+        setFormData(prev => ({ ...prev, skills: formattedSkills }));
       } else {
         setSkillExtractionError(result.error || 'Failed to extract skills. Please try again or enter skills manually.');
       }
@@ -203,4 +212,4 @@ export default function PostJob() {
       </form>
     </div>
   );
-} 
+}
